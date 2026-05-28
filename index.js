@@ -15,22 +15,27 @@ app.get('/consulta', async (req, res) => {
   try {
     const dados = await sinesp.search(placaLimpa);
 
+    // Log para debug
+    console.log('SINESP retornou:', JSON.stringify(dados));
+
     res.json({
-      situacao:     dados.situation  || 'Regular',
-      marca:        dados.brand      || '-',
-      modelo:       dados.model      || '-',
-      ano:          dados.modelYear  || '-',
-      cor:          dados.color      || '-',
-      municipio:    dados.city       || '-',
-      uf:           dados.state      || '-',
-      chassi:       dados.chassis    || '-',
+      situacao:     dados.situation  || dados.situacao  || 'Regular',
+      marca:        dados.brand      || dados.marca     || '-',
+      modelo:       dados.model      || dados.modelo    || '-',
+      ano:          dados.modelYear  || dados.ano       || '-',
+      cor:          dados.color      || dados.cor       || '-',
+      municipio:    dados.city       || dados.municipio || '-',
+      uf:           dados.state      || dados.uf        || '-',
+      chassi:       dados.chassis    || dados.chassi    || '-',
       restricoes:   'Nenhuma',
-      status:       (dados.situation || '').toLowerCase().includes('restri') ? 'vermelho' : 'verde',
+      status:       'verde',
+      raw:          dados,
       consultadoEm: new Date().toLocaleString('pt-BR')
     });
 
   } catch (err) {
-    res.json({ erro: err.message });
+    console.log('ERRO SINESP:', err);
+    res.json({ erro: err.message, stack: err.stack });
   }
 });
 
